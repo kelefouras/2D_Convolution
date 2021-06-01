@@ -1,5 +1,5 @@
 echo running a0.pgm
-gcc main.c Gaussian_Blur.c input_output.c convolution.c -o p -O3 -march=native -mavx -lm -D_GNU_SOURCE  -g  -pthread -fopenmp
+gcc main.c Gaussian_Blur.c input_output.c Filter2D.c -o p -O3 -march=native -mavx -lm -D_GNU_SOURCE  -g  -pthread -fopenmp
 
 ./p 40000 /home/user01/eclipse-workspace/test/input_images/a0.pgm
 ./p 40000 /home/user01/eclipse-workspace/test/input_images/a0.pgm
