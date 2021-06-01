@@ -234,7 +234,7 @@ signed char gaussian_filter_5x5_seperable_x[6][32] __attribute__((aligned(64))) 
 
 
 
-void Gaussian_Blur_default(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N,const unsigned int filter_size, const unsigned int divisor,signed char **filter){
+void Conv_default(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N,const unsigned int filter_size, const unsigned int divisor,signed char **filter){
 
 	int row,col,rowOffset,colOffset;
 	int newPixel;
@@ -267,7 +267,7 @@ void Gaussian_Blur_default(unsigned char **frame1,unsigned char **filt,const uns
 
 
 
-void Gaussian_Blur_default_separable(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned int kernel_size, signed char *kernel_y, signed char *kernel_x, const unsigned int divisor_xy){
+void Conv_default_separable(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned int kernel_size, signed char *kernel_y, signed char *kernel_x, const unsigned int divisor_xy){
 
 
 	int row,col,rowOffset,colOffset,newPixel;
@@ -1362,7 +1362,7 @@ return 0;
 
 
 
-void Gaussian_Blur_optimized_5x5_step28_less_div(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned short int divisor, signed char **filter5x5){
+void Gaussian_Blur_optimized_5x5_16(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned short int divisor, signed char **filter5x5){
 
 const signed char f00=filter5x5[0][0];
 const signed char f01=filter5x5[0][1];
@@ -3055,7 +3055,7 @@ __m256i m0_prelude_row0,m0_prelude_row1;
 
 
 
-void Gaussian_Blur_optimized_5x5_step28_less_div_reg_blocking(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned short int divisor, signed char **filter5x5){
+void Gaussian_Blur_optimized_5x5_16_reg_blocking(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned short int divisor, signed char **filter5x5){
 
 const signed char f00=filter5x5[0][0];
 const signed char f01=filter5x5[0][1];
@@ -17569,7 +17569,7 @@ return 0;
 
 
 
-void Gaussian_Blur_optimized_3x3_reg_blocking(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned short int divisor, signed char **filter){
+void Gaussian_Blur_optimized_3x3_16_reg_blocking(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned short int divisor, signed char **filter){
 
 const signed char f00=filter[0][0];
 const signed char f01=filter[0][1];
@@ -31752,7 +31752,7 @@ const signed char mask_vector_y[18][32] __attribute__((aligned(64))) ={
 
 //	const unsigned int division_case_x=prepare_for_division_32(divisor_x); //determine which is the division case (A, B or C)
 //	const __m256i f_x = _mm256_load_si256( (__m256i *) &f_vector_x[0]);// initialize the division vector
-printf("\n%d ",division_case);
+//printf("\n%d ",division_case);
 
 
 #pragma omp parallel
@@ -31886,8 +31886,8 @@ unsigned char temp[M+32+6] __attribute__((aligned(64)));//temporal storage of th
 		  if (col==0){
 
 	  			//1st col iteration
-				r0=_mm256_load_si256( (__m256i *) &temp[0]);
-		  		r0=fill_zeros(r0,mask_prelude);
+	  __m256i	rr0=_mm256_load_si256( (__m256i *) &temp[0]);
+		  		r0=fill_zeros(rr0,mask_prelude);
 	  			//multiply by the mask
 	  			m0=_mm256_maddubs_epi16(r0,cx0);
 
@@ -31917,8 +31917,8 @@ unsigned char temp[M+32+6] __attribute__((aligned(64)));//temporal storage of th
 
 
 	  			//2nd col iteration
-				r0=_mm256_load_si256( (__m256i *) &temp[0]);
-		  		r0=fill_3zeros(r0,mask_prelude_3);
+			//	r0=_mm256_load_si256( (__m256i *) &temp[0]);
+		  		r0=fill_3zeros(rr0,mask_prelude_3);
 
 	  			//multiply by the mask
 	  			m0=_mm256_maddubs_epi16(r0,cx0);
@@ -31949,8 +31949,8 @@ unsigned char temp[M+32+6] __attribute__((aligned(64)));//temporal storage of th
 
 
 	  			//3rd col iteration
-				r0=_mm256_load_si256( (__m256i *) &temp[0]);
-		  		r0=fill_2zeros(r0,mask_prelude_2);
+			//	r0=_mm256_load_si256( (__m256i *) &temp[0]);
+		  		r0=fill_2zeros(rr0,mask_prelude_2);
 
 	  			//multiply by the mask
 	  			m0=_mm256_maddubs_epi16(r0,cx0);
@@ -31982,8 +31982,8 @@ unsigned char temp[M+32+6] __attribute__((aligned(64)));//temporal storage of th
 	  			even=_mm256_add_epi16(m0,even);
 
 	  			//4th col iteration
-				r0=_mm256_load_si256( (__m256i *) &temp[0]);
-		  		r0=fill_1zeros(r0,mask_prelude_1);
+				//r0=_mm256_load_si256( (__m256i *) &temp[0]);
+		  		r0=fill_1zeros(rr0,mask_prelude_1);
 
 	  			//multiply by the mask
 	  			m0=_mm256_maddubs_epi16(r0,cx0);
@@ -32015,10 +32015,10 @@ unsigned char temp[M+32+6] __attribute__((aligned(64)));//temporal storage of th
 	  			odd=_mm256_add_epi16(m0,odd);
 
 	  			//5th col iteration
-				r0=_mm256_load_si256( (__m256i *) &temp[0]);
+				//r0=_mm256_load_si256( (__m256i *) &temp[0]);
 
 				//multiply by the mask
-	  			m0=_mm256_maddubs_epi16(r0,cx0);
+	  			m0=_mm256_maddubs_epi16(rr0,cx0);
 
 	  			//first horizontal add (complex shift is needed)
 	  			m3=_mm256_srli_si256(m0,2);
@@ -37322,8 +37322,8 @@ unsigned char temp[M+32+6] __attribute__((aligned(64)));//temporal storage of th
 		  if (col==0){
 
 	  			//1st col iteration
-				r0=_mm256_load_si256( (__m256i *) &temp[0]);
-		  		r0=fill_zeros(r0,mask_prelude);
+		__m256i	rr0=_mm256_load_si256( (__m256i *) &temp[0]);
+		  		r0=fill_zeros(rr0,mask_prelude);
 
 	  			//multiply by the mask
 	  			m0=_mm256_maddubs_epi16(r0,cx0);
@@ -37357,8 +37357,8 @@ unsigned char temp[M+32+6] __attribute__((aligned(64)));//temporal storage of th
 
 
 	  			//2nd col iteration
-				r0=_mm256_load_si256( (__m256i *) &temp[0]);
-		  		r0=fill_3zeros(r0,mask_prelude_3);
+			//	r0=_mm256_load_si256( (__m256i *) &temp[0]);
+		  		r0=fill_3zeros(rr0,mask_prelude_3);
 
 	  			//multiply by the mask
 		  			m0=_mm256_maddubs_epi16(r0,cx0);
@@ -37408,8 +37408,8 @@ unsigned char temp[M+32+6] __attribute__((aligned(64)));//temporal storage of th
 		  			output1=_mm256_add_epi8(m0,m3);
 
 	  			//3rd col iteration
-				r0=_mm256_load_si256( (__m256i *) &temp[0]);
-		  		r0=fill_2zeros(r0,mask_prelude_2);
+				//r0=_mm256_load_si256( (__m256i *) &temp[0]);
+		  		r0=fill_2zeros(rr0,mask_prelude_2);
 
 	  			//multiply by the mask
 	  			m0=_mm256_maddubs_epi16(r0,cx0);
@@ -37444,8 +37444,8 @@ unsigned char temp[M+32+6] __attribute__((aligned(64)));//temporal storage of th
 
 
 	  			//4th col iteration
-				r0=_mm256_load_si256( (__m256i *) &temp[0]);
-		  		r0=fill_1zeros(r0,mask_prelude_1);
+			//	r0=_mm256_load_si256( (__m256i *) &temp[0]);
+		  		r0=fill_1zeros(rr0,mask_prelude_1);
 
 	  			//multiply by the mask
 			  			m0=_mm256_maddubs_epi16(r0,cx0);
@@ -37496,10 +37496,10 @@ unsigned char temp[M+32+6] __attribute__((aligned(64)));//temporal storage of th
 
 
 	  			//5th col iteration
-				r0=_mm256_load_si256( (__m256i *) &temp[0]);
+				//r0=_mm256_load_si256( (__m256i *) &temp[0]);
 
 	  			//multiply by the mask
-		  			m0=_mm256_maddubs_epi16(r0,cx0);
+		  			m0=_mm256_maddubs_epi16(rr0,cx0);
 
 			  			//zero the 4th out of 16 elements
 			  			m1=_mm256_and_si256(m0,mask_unz);
@@ -41518,8 +41518,8 @@ unsigned char temp[M+32+4] __attribute__((aligned(64)));//temporal storage of th
 
 	  			//1st col iteration
 	  			//multiply by the mask
-		        r0=_mm256_loadu_si256( (__m256i *) &temp[0]);
-		  		r0=fill_3zeros(r0,mask_prelude_3);
+	  __m256i   rr0=_mm256_load_si256( (__m256i *) &temp[0]);
+		  		r0=fill_3zeros(rr0,mask_prelude_3);
 
 				//multiply by the mask
 				m0=_mm256_maddubs_epi16(r0,cx0);
@@ -41535,8 +41535,8 @@ unsigned char temp[M+32+4] __attribute__((aligned(64)));//temporal storage of th
 				even=_mm256_and_si256(m0,mask_16_1);//in 16-bit format keep only 0,4,8,12 and discard the others
 
 	  			//2nd col iteration
-		        r0=_mm256_loadu_si256( (__m256i *) &temp[0]);
-		  		r0=fill_2zeros(r0,mask_prelude_2);
+		        //r0=_mm256_load_si256( (__m256i *) &temp[0]);
+		  		r0=fill_2zeros(rr0,mask_prelude_2);
 
 				//multiply by the mask
 				m0=_mm256_maddubs_epi16(r0,cx0);
@@ -41553,8 +41553,8 @@ unsigned char temp[M+32+4] __attribute__((aligned(64)));//temporal storage of th
 
 
 	  			//3rd col iteration
-		        r0=_mm256_loadu_si256( (__m256i *) &temp[0]);
-		  		r0=fill_1zeros(r0,mask_prelude_1);
+		       // r0=_mm256_load_si256( (__m256i *) &temp[0]);
+		  		r0=fill_1zeros(rr0,mask_prelude_1);
 
 				//multiply by the mask
 				m0=_mm256_maddubs_epi16(r0,cx0);
@@ -41575,10 +41575,10 @@ unsigned char temp[M+32+4] __attribute__((aligned(64)));//temporal storage of th
 
 
 	  			//4th col iteration
-		        r0=_mm256_loadu_si256( (__m256i *) &temp[0]);
+		       // r0=_mm256_load_si256( (__m256i *) &temp[0]);
 
 				//multiply by the mask
-				m0=_mm256_maddubs_epi16(r0,cx0);
+				m0=_mm256_maddubs_epi16(rr0,cx0);
 
 				//first horizontal add
 				m1=_mm256_srli_si256(m0,2);
@@ -41752,7 +41752,7 @@ unsigned char temp[M+32+4] __attribute__((aligned(64)));//temporal storage of th
 
 
 		  			//4th col iteration
-	  		        r0=_mm256_loadu_si256( (__m256i *) &temp[col]);
+	  		        r0=_mm256_load_si256( (__m256i *) &temp[col]);
 
 					//multiply by the mask
 					m0=_mm256_maddubs_epi16(r0,cx0);
@@ -43619,8 +43619,8 @@ unsigned char temp[M+32+4] __attribute__((aligned(64)));//temporal storage of th
 
 		  		//1st col iteration
 
-			  r0=_mm256_loadu_si256( (__m256i *) &temp[0]);
-		  		r0=fill_3zeros(r0,mask_prelude_3);
+		__m256i rr0=_mm256_load_si256( (__m256i *) &temp[0]);
+		  		r0=fill_3zeros(rr0,mask_prelude_3);
 
 				//multiply by the mask
 				m0=_mm256_maddubs_epi16(r0,cx0);
@@ -43635,8 +43635,8 @@ unsigned char temp[M+32+4] __attribute__((aligned(64)));//temporal storage of th
 
 
 		  			//2nd col iteration
-	  		        r0=_mm256_loadu_si256( (__m256i *) &temp[0]);
-			  		r0=fill_2zeros(r0,mask_prelude_2);
+	  		       // r0=_mm256_loadu_si256( (__m256i *) &temp[0]);
+			  		r0=fill_2zeros(rr0,mask_prelude_2);
 
 					//multiply by the mask
 					m0=_mm256_maddubs_epi16(r0,cx0);
@@ -43651,8 +43651,8 @@ unsigned char temp[M+32+4] __attribute__((aligned(64)));//temporal storage of th
 
 
 		  			//3rd col iteration
-	  		        r0=_mm256_loadu_si256( (__m256i *) &temp[0]);
-			  		r0=fill_1zeros(r0,mask_prelude_1);
+	  		      //  r0=_mm256_loadu_si256( (__m256i *) &temp[0]);
+			  		r0=fill_1zeros(rr0,mask_prelude_1);
 
 					//multiply by the mask
 					m0=_mm256_maddubs_epi16(r0,cx0);
@@ -43667,10 +43667,10 @@ unsigned char temp[M+32+4] __attribute__((aligned(64)));//temporal storage of th
 
 
 		  			//4th col iteration
-	  		        r0=_mm256_loadu_si256( (__m256i *) &temp[0]);
+	  		   //     r0=_mm256_loadu_si256( (__m256i *) &temp[0]);
 
 					//multiply by the mask
-					m0=_mm256_maddubs_epi16(r0,cx0);
+					m0=_mm256_maddubs_epi16(rr0,cx0);
 
 					//make 16-bit values 32-bit (horizontal add)
 					m0=_mm256_madd_epi16(m0,ones);
@@ -43828,7 +43828,7 @@ unsigned char temp[M+32+4] __attribute__((aligned(64)));//temporal storage of th
 
 
 		  			//4th col iteration
-	  		        r0=_mm256_loadu_si256( (__m256i *) &temp[col]);
+	  		        r0=_mm256_load_si256( (__m256i *) &temp[col]);
 
 					//multiply by the mask
 					m0=_mm256_maddubs_epi16(r0,cx0);

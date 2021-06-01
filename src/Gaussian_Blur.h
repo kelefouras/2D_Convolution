@@ -18,8 +18,8 @@
 
 
 //default routines
-void Gaussian_Blur_default(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N,const unsigned int filter_size,const unsigned int divisor, signed char **filter5x5);
-void Gaussian_Blur_default_separable(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned int kernel_size, signed char *kernel_y, signed char *kernel_x, const unsigned int divisor_xy);
+void Conv_default(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N,const unsigned int filter_size,const unsigned int divisor, signed char **filter5x5);
+void Conv_default_separable(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned int kernel_size, signed char *kernel_y, signed char *kernel_x, const unsigned int divisor_xy);
 
 
 //------------------------9x9 routines ------------------------------------
@@ -89,10 +89,10 @@ void loop_reminder_7x7_16_blur(unsigned char **frame1,unsigned char **filt,const
 //------------------------5x5 routines ------------------------------------
 // THE MAIN ROUTINEs HERE ARE THE :
 //Gaussian_Blur_optimized_5x5_16_seperable - THIS FASTEST FOR DIVISOR=POWER OF 2
-//Gaussian_Blur_optimized_5x5_step28_less_div_reg_blocking() - THIS FASTEST FOR DIVISOR=NOT POWER OF 2
+//Gaussian_Blur_optimized_5x5_16_reg_blocking() - THIS FASTEST FOR DIVISOR=NOT POWER OF 2
 
-void Gaussian_Blur_optimized_5x5_step28_less_div(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned short int divisor, signed char **filter);
-void Gaussian_Blur_optimized_5x5_step28_less_div_reg_blocking(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned short int divisor, signed char **filter);
+void Gaussian_Blur_optimized_5x5_16(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned short int divisor, signed char **filter);
+void Gaussian_Blur_optimized_5x5_16_reg_blocking(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned short int divisor, signed char **filter);
 int loop_reminder_high_reminder_values_less_div(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N,const unsigned int row, const unsigned int col,const unsigned int REMINDER_ITERATIONS,const unsigned int division_case,const __m256i c0,const __m256i c1,const __m256i c2,const __m256i c0_sh1,const __m256i c1_sh1,const __m256i c2_sh1,const __m256i c0_sh2,const __m256i c1_sh2,const __m256i c2_sh2, const __m256i f,const unsigned short int divisor,signed char **filter5x5);
 int loop_reminder_low_reminder_values_less_div(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N,const unsigned int row, const unsigned int col,const unsigned int REMINDER_ITERATIONS,const unsigned int division_case,const __m256i c0,const __m256i c1,const __m256i c2,const __m256i c0_sh1,const __m256i c1_sh1,const __m256i c2_sh1,const __m256i c0_sh2,const __m256i c1_sh2,const __m256i c2_sh2, const __m256i c0_sh3,const __m256i c1_sh3,const __m256i c2_sh3,const __m256i c0_sh4,const __m256i c1_sh4,const __m256i c2_sh4,const __m256i c0_sh5,const __m256i c1_sh5,const __m256i c2_sh5,const __m256i f);
 int loop_reminder_first_less_div(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned int col,const unsigned int REMINDER_ITERATIONS,const unsigned int division_case,const __m256i c0,const __m256i c1,const __m256i c2,const __m256i c0_sh1,const __m256i c1_sh1,const __m256i c2_sh1,const __m256i c0_sh2,const __m256i c1_sh2,const __m256i c2_sh2, const __m256i f,const unsigned short int divisor, signed char **filter5x5);
@@ -133,13 +133,13 @@ int loop_reminder_high_reminder_values_seperable(unsigned char **frame1,unsigned
 
 
 //------------------------3x3 routines ------------------------------------
-// THE MAIN ROUTINES HERE ARE THE Gaussian_Blur_3x3_16_more_load and the Gaussian_Blur_optimized_3x3_reg_blocking()
+// THE MAIN ROUTINES HERE ARE THE Gaussian_Blur_3x3_16_more_load and the Gaussian_Blur_optimized_3x3_16_reg_blocking()
 void Gaussian_Blur_3x3_16_more_load(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned short int divisor, signed char **filter);
 int loop_reminder_3x3_new(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N,const unsigned int row, const unsigned int col,const unsigned int REMINDER_ITERATIONS,const unsigned int division_case,const unsigned short int divisor,signed char **filter,const __m256i c0,const __m256i c1,const __m256i f);
 int loop_reminder_3x3_new_first_last_rows(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N,const unsigned int row, const unsigned int col,const unsigned int REMINDER_ITERATIONS,const unsigned int division_case,const unsigned short int divisor,signed char **filter,const __m256i c0,const __m256i c1,const __m256i f);
 
 
-void Gaussian_Blur_optimized_3x3_reg_blocking(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned short int divisor, signed char **filter);
+void Gaussian_Blur_optimized_3x3_16_reg_blocking(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned short int divisor, signed char **filter);
 void Gaussian_Blur_optimized_3x3(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned short int divisor, signed char **filter);
 int loop_reminder_3x3(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N,const unsigned int row, const unsigned int col,const unsigned int REMINDER_ITERATIONS,const unsigned int division_case,const unsigned short int divisor,signed char **filter,const __m256i c0,const __m256i c1,const __m256i c0_sh1,const __m256i c1_sh1,const __m256i c0_sh2,const __m256i c1_sh2, const __m256i c0_sh3,const __m256i c1_sh3,const __m256i f);
 int loop_reminder_3x3_first_values(unsigned char **frame1,unsigned char **filt,const unsigned int M, const unsigned int N, const unsigned int col,const unsigned int REMINDER_ITERATIONS,const unsigned int division_case,const unsigned short int divisor,signed char **filter,const __m256i c0,const __m256i c1,const __m256i c0_sh1,const __m256i c1_sh1,const __m256i c0_sh2,const __m256i c1_sh2, const __m256i c0_sh3,const __m256i c1_sh3,const __m256i f);

@@ -1,19 +1,10 @@
-//for 7x7 and higher, there are too many coefficients thus it is more efficient to use k coeff and load the input many times.
-//if I load many times, then more pixels are computed in each iteration, but there are more load instructions and no reg blocking. Plus in 5x5 I need some extra instructions
-//in 5x5 conv loading using many coeffs instead of loading many times is about x1.2 faster. in 3x3 is the opposite. There is a trade off between more calculated pixels per iteration vs less load instructions. in 3x3 the num of extra loads is low, while in 5x5 is  high and thus the results are these.
-
-//for 7x7 and higher, we need 32-bit, unless we use separable filters
-//for the largest input size, reg blocking is not efficient. however, for separable filters is ?
-
-
-//valw aligned load sto main loop olwn
 
 //compile using gcc main.c Gaussian_Blur.c input_output.c convolution.c -o p -O3 -march=native -mavx -lm -D_GNU_SOURCE  -g  -pthread -fopenmp
 //before run read the readme.txt
 
+#include "Filter2D.h"
 #include "input_output.h"
 #include "Gaussian_Blur.h"
-#include "convolution.h"
 
 //the kernel pairs cannot be both large as in this case maddubs instruction cannot work; output must be within [−32,767, +32,767]
 void check_whether_maddubs_sacrifices_accuracy();
@@ -30,7 +21,7 @@ int measure_time(int argc, char** argv); //this routine is used to measure the e
 
 signed char **Mask;//2d gaussian mask with integers
 unsigned short int divisor;//divisor of the gaussian mask
-unsigned int kernel_size;//kernel size, e.g., 5 when 5x5 or 3 when 3x3
+unsigned int kernel_size;
 
 signed char *Separable_Mask_y;//1d gaussian mask with integers for y direction
 signed char *Separable_Mask_x;//1d gaussian mask with integers for x direction
@@ -39,7 +30,7 @@ unsigned short int divisor_xy;//in gaussian blur the divisor of the Separable_Ma
 
 int main( int argc, char** argv){
 
-unsigned char size=3; //SET the kernel size here - USE EITHER size=3 OR size=5 OR size=7 OR size=9
+unsigned char size=9; //SET the kernel size here - USE EITHER size=3 OR size=5 OR size=7 OR size=9 to initialize kernels of size 3x3,5x5,7x7,9x9
 kernel_size=size;//make it global scope
 
 
@@ -51,11 +42,11 @@ if (create_kernel()!=0){
 
 
 //Routine that measures the execution time
-measure_time(argc, argv);
+//measure_time(argc, argv);
 
 //-------------To test the correctness of the proposed method un-comment the following routines----------------------------
-//generate_default_images();
-//generate_optimized_images();
+generate_default_images();
+generate_optimized_images();
 
 
 //deallocate mask
@@ -258,10 +249,10 @@ int measure_time(int argc, char** argv){
 	//	Gaussian_Blur_3x3_16_inefficient_LS(frame1,filt,M,N,divisor,Mask);
 		//Filter2D_3x3_16(frame1,filt,M,N,divisor,Mask);
 		//Gaussian_Blur_7x7_16_separable(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
-		//Gaussian_Blur_9x9_16_separable(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
+		Gaussian_Blur_9x9_16_separable(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
 		//Gaussian_Blur_9x9_16_separable_extra_array_less_load(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
 		//Gaussian_Blur_3x3_16_ineff_float_div(frame1,filt,M,N,divisor,Mask);
-		Gaussian_Blur_3x3_16_ineff_more_LS(frame1,filt,M,N,divisor,Mask);
+		//Gaussian_Blur_3x3_16_ineff_more_LS(frame1,filt,M,N,divisor,Mask);
 		//convolution_optimized_9x9_32(frame1,filt,M,N,divisor,Mask);
 		//Gaussian_Blur_default(frame1,filt,M,N,kernel_size,divisor,Mask);
 	}
@@ -294,8 +285,8 @@ void generate_default_images(){
 
 		read_image(In_path);
 
-		//Gaussian_Blur_default_separable(frame1,filt,M,N,kernel_size,Separable_Mask_y,Separable_Mask_x,divisor_xy);
-		Gaussian_Blur_default(frame1,filt,M,N,kernel_size,divisor,Mask);
+		//Conv_default_separable(frame1,filt,M,N,kernel_size,Separable_Mask_y,Separable_Mask_x,divisor_xy);
+		Conv_default(frame1,filt,M,N,kernel_size,divisor,Mask);
 
 		write_image2(Out_path); //store output image to the disc
 
@@ -328,7 +319,7 @@ void generate_optimized_images(){
 		if (kernel_size==3){
 			//Gaussian_Blur_optimized_3x3_32(frame1,filt,M,N,divisor,Mask);
 			//Gaussian_Blur_optimized_3x3_reg_blocking_32(frame1,filt,M,N,divisor,Mask);
-			Gaussian_Blur_optimized_3x3_reg_blocking(frame1,filt,M,N,divisor,Mask);
+			Gaussian_Blur_optimized_3x3_16_reg_blocking(frame1,filt,M,N,divisor,Mask);
 			//Gaussian_Blur_optimized_3x3_coeffprop(frame1,filt,M,N,divisor,Mask);
 			//convolution_optimized_3x3_reg_blocking_16(frame1,filt,M,N,divisor,Mask);
 			//Gaussian_Blur_3x3_16_new_todo(frame1,filt,M,N,divisor,Mask);
@@ -337,18 +328,19 @@ void generate_optimized_images(){
 
 		}
 		else if (kernel_size==5){
-			//Gaussian_Blur_optimized_5x5_step28_less_div_reg_blocking(frame1,filt,M,N,divisor,Mask);
+			Gaussian_Blur_optimized_5x5_16_reg_blocking(frame1,filt,M,N,divisor,Mask);
 			//convolution_optimized_5x5_reg_blocking_16(frame1,filt,M,N,divisor,Mask);
 			//Gaussian_Blur_optimized_5x5_16_seperable(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
-			convolution_optimized_5x5_old(frame1,filt,M,N,divisor,Mask);
+			//convolution_optimized_5x5_old(frame1,filt,M,N,divisor,Mask);
 
 		}
 		else if (kernel_size==7){
 			//convolution_optimized_7x7_32(frame1,filt,M,N,divisor,Mask);
-			Gaussian_Blur_7x7_16_separable(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
+			Gaussian_Blur_7x7_32_separable(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
+
 		}
 		else if (kernel_size==9){
-			//Gaussian_Blur_9x9_16_separable(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
+			//Gaussian_Blur_9x9_32_separable(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
 			convolution_optimized_9x9_32(frame1,filt,M,N,divisor,Mask);
 
 		}
@@ -467,4 +459,10 @@ void check_whether_16_bit_intermediate_results_enough(){
 
 }
 
+//for 7x7 and higher, there are too many coefficients thus it is more efficient to use k coeff and load the input many times.
+//if I load many times, then more pixels are computed in each iteration, but there are more load instructions and no reg blocking. Plus in 5x5 I need some extra instructions
+//in 5x5 conv loading using many coeffs instead of loading many times is about x1.2 faster. in 3x3 is the opposite. There is a trade off between more calculated pixels per iteration vs less load instructions. in 3x3 the num of extra loads is low, while in 5x5 is  high and thus the results are these.
+
+//for 7x7 and higher, we need 32-bit, unless we use separable filters
+//for the largest input size, reg blocking is not efficient. however, for separable filters is ?
 
