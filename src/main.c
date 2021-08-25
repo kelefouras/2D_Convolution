@@ -30,7 +30,7 @@ unsigned short int divisor_xy;//in gaussian blur the divisor of the Separable_Ma
 
 int main( int argc, char** argv){
 
-unsigned char size=9; //SET the kernel size here - USE EITHER size=3 OR size=5 OR size=7 OR size=9 to initialize kernels of size 3x3,5x5,7x7,9x9
+unsigned char size=3; //SET the kernel size here - USE EITHER size=3 OR size=5 OR size=7 OR size=9 to initialize kernels of size 3x3,5x5,7x7,9x9
 kernel_size=size;//make it global scope
 
 
@@ -42,11 +42,11 @@ if (create_kernel()!=0){
 
 
 //Routine that measures the execution time
-//measure_time(argc, argv);
+measure_time(argc, argv);
 
 //-------------To test the correctness of the proposed method un-comment the following routines----------------------------
-generate_default_images();
-generate_optimized_images();
+//generate_default_images();
+//generate_optimized_images();
 
 
 //deallocate mask
@@ -240,7 +240,7 @@ int measure_time(int argc, char** argv){
 	for (int i=0;i<arg1;i++){
 		//convolution_optimized_5x5_reg_blocking_16(frame1,filt,M,N,divisor,Mask);
 	//	convolution_optimized_5x5_old(frame1,filt,M,N,divisor,Mask);
-	//convolution_optimized_3x3(frame1,filt,M,N,divisor,Mask);
+	convolution_optimized_3x3_reg_blocking_16(frame1,filt,M,N,divisor,Mask);
 		//Gaussian_Blur_optimized_5x5_16_seperable(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
 		//Gaussian_Blur_3x3_16_new_todo(frame1,filt,M,N,divisor,Mask);
 	// Gaussian_Blur_optimized_5x5_step28_less_div_reg_blocking(frame1,filt,M,N,divisor,Mask);
@@ -249,7 +249,7 @@ int measure_time(int argc, char** argv){
 	//	Gaussian_Blur_3x3_16_inefficient_LS(frame1,filt,M,N,divisor,Mask);
 		//Filter2D_3x3_16(frame1,filt,M,N,divisor,Mask);
 		//Gaussian_Blur_7x7_16_separable(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
-		Gaussian_Blur_9x9_16_separable(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
+		//Gaussian_Blur_9x9_16_separable(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
 		//Gaussian_Blur_9x9_16_separable_extra_array_less_load(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
 		//Gaussian_Blur_3x3_16_ineff_float_div(frame1,filt,M,N,divisor,Mask);
 		//Gaussian_Blur_3x3_16_ineff_more_LS(frame1,filt,M,N,divisor,Mask);
