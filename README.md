@@ -3,7 +3,7 @@ In this repository you can find the fastest routines available for computing the
 Although the 2D convolution operation can be applied to several image/video processing applications, this repository includes the GaussianBlur and Filter2D routines (image smoothing). These routines read 8-bit greyscale images and generate new smoothed greyscale images.
 For more information about how these routines work see the description of OpenCV library https://docs.opencv.org/master/d4/d86/group__imgproc__filter.html. 
 
-A detailed description of these routines can be found in the paper entitled 'A Methodology for Speeding up the 2D Convolution on
+A detailed description of these routines can be found in the paper entitled 'The Design and Implementation of 2D Convolution on
 x86-64 Processors' published in ...
 
 The fastest Filter2D routines (used for non-symmetrical kernels) are:
