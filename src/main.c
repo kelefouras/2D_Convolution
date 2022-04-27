@@ -103,7 +103,7 @@ int create_kernel(){
 	  Mask[2][0]=6; Mask[2][1]=24; Mask[2][2]=36;  Mask[2][3]=24;   Mask[2][4]=6;
 	  Mask[3][0]=4; Mask[3][1]=16;  Mask[3][2]=24; Mask[3][3]=16;  Mask[3][4]=4;
 	  Mask[4][0]=1; Mask[4][1]=4;  Mask[4][2]=6;  Mask[4][3]=4;  Mask[4][4]=1;
-	  divisor=256;
+	  divisor=257;
 
 	  Separable_Mask_y[0]=1;Separable_Mask_y[1]=4;Separable_Mask_y[2]=6;Separable_Mask_y[3]=4;Separable_Mask_y[4]=1;
 	  Separable_Mask_x[0]=1;Separable_Mask_x[1]=4;Separable_Mask_x[2]=6;Separable_Mask_x[3]=4;Separable_Mask_x[4]=1;
@@ -154,9 +154,9 @@ int create_kernel(){
 	  Mask[4][0]=7; Mask[4][1]=26;  Mask[4][2]=55;  Mask[4][3]=71;     Mask[4][4]=55;  Mask[4][5]=26;  Mask[4][6]=7;
 	  Mask[5][0]=4; Mask[5][1]=12;  Mask[5][2]=26;  Mask[5][3]=33;     Mask[5][4]=26;  Mask[5][5]=12;  Mask[5][6]=4;
 	  Mask[6][0]=1; Mask[6][1]=4;  Mask[6][2]=7;  Mask[6][3]=10;       Mask[6][4]=7;  Mask[6][5]=4;  Mask[6][6]=1;
-	  divisor=1115-60;//div 3
+	  //divisor=1115-60;//div 3
 	 // divisor=1200;//div 2
-	 // divisor=1024;
+	  divisor=1200;
 
 	  Separable_Mask_y[0]=1;Separable_Mask_y[1]=6;Separable_Mask_y[2]=15;Separable_Mask_y[3]=20;Separable_Mask_y[4]=15;Separable_Mask_y[5]=6;Separable_Mask_y[6]=1;
 	  Separable_Mask_x[0]=1;Separable_Mask_x[1]=6;Separable_Mask_x[2]=15;Separable_Mask_x[3]=20;Separable_Mask_x[4]=15;Separable_Mask_x[5]=6;Separable_Mask_x[6]=1;
@@ -241,6 +241,7 @@ int measure_time(int argc, char** argv){
 		//convolution_optimized_5x5_reg_blocking_16(frame1,filt,M,N,divisor,Mask);
 	//	convolution_optimized_5x5_old(frame1,filt,M,N,divisor,Mask);
 	convolution_optimized_3x3_reg_blocking_16(frame1,filt,M,N,divisor,Mask);
+	//convolution_optimized_3x3_16_many_loads(frame1,filt,M,N,divisor,Mask);
 		//Gaussian_Blur_optimized_5x5_16_seperable(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
 		//Gaussian_Blur_3x3_16_new_todo(frame1,filt,M,N,divisor,Mask);
 	// Gaussian_Blur_optimized_5x5_step28_less_div_reg_blocking(frame1,filt,M,N,divisor,Mask);
@@ -335,8 +336,8 @@ void generate_optimized_images(){
 
 		}
 		else if (kernel_size==7){
-			//convolution_optimized_7x7_32(frame1,filt,M,N,divisor,Mask);
-			Gaussian_Blur_7x7_32_separable(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
+			convolution_optimized_7x7_32(frame1,filt,M,N,divisor,Mask);
+			//Gaussian_Blur_7x7_32_separable(frame1,filt,M,N,Separable_Mask_y,Separable_Mask_x,divisor_xy);
 
 		}
 		else if (kernel_size==9){

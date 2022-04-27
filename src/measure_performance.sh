@@ -70,8 +70,8 @@ echo running a11.pgm
 
 echo
 echo running a12.pgm
-./p 20000 /home/wave/Desktop/convolution/my_github/input_images/a12.pgm
-./p 20000 /home/wave/Desktop/convolution/my_github/input_images/a12.pgm
+./p 10000 /home/wave/Desktop/convolution/my_github/input_images/a12.pgm
+./p 10000 /home/wave/Desktop/convolution/my_github/input_images/a12.pgm
 
 
 echo

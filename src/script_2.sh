@@ -60,7 +60,7 @@ echo running a10.pgm
 ./p 40000 /home/wave/Desktop/convolution/my_github/input_images/a10.pgm
 ./p 40000 /home/wave/Desktop/convolution/my_github/input_images/a10.pgm
 
-echo is 5.264054 secon
+echo 
 echo running a11.pgm
 ./p 20000 /home/wave/Desktop/convolution/my_github/input_images/a11.pgm
 ./p 20000 /home/wave/Desktop/convolution/my_github/input_images/a11.pgm

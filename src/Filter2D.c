@@ -2638,7 +2638,7 @@ const __m256i c2_sh3=_mm256_set_epi8(0,0,f22,f21,f20,0,f22,f21,f20,0,f22,f21,f20
 
 	const unsigned int division_case=prepare_for_division(divisor); //determine which is the division case (A, B or C)
 	const __m256i f = _mm256_load_si256( (__m256i *) &f_vector[0]);// initialize the division vector
-print_vector_16(f);
+//print_vector_16(f);
 //printf("\n%d %d",division_case,b);
 
 
