@@ -1,6 +1,6 @@
 In this repository you can find several fast routines for computing the 2D Convolution operation on x64 processors (Linux only). 
 
-Although the 2D convolution operation can be applied to several image/video processing applications, this repository includes the efficient implementation of the GaussianBlur and Filter2D routines (image smoothing), on greyscale images. These routines read 8-bit greyscale images and generate new smoothed greyscale 8-bit images.
+Although the 2D convolution operation can be applied to several image/video processing applications (such as image filtering, smoothing, sharpening, edge detection and differentiation), this repository includes the efficient implementation of the GaussianBlur and Filter2D routines (image smoothing), on greyscale images. These routines read 8-bit greyscale images and generate new smoothed greyscale 8-bit images.
 For more information about what the GaussianBlur and Filter2D routines do, see the description of OpenCV library https://docs.opencv.org/master/d4/d86/group__imgproc__filter.html. 
 
 A detailed description of the fast optimized routines can be found in the paper entitled 'Design and Implementation of 2D Convolution on
